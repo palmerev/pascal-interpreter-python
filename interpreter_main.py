@@ -19,6 +19,19 @@ class Token:
     def __repr__(self):
         return self.__str__()
 
+    # adding two INTEGER tokens concatenates their digits
+    def __add__(self, other):
+        if self.type_ == other.type_ == INTEGER:
+            return Token(self.type_, int(str(self.value) + str(other.value)))
+        else:
+            raise Exception('error adding tokens: incorrect token type')
+
+    def __radd__(self, other):
+        if self.type_ == other.type_ == INTEGER:
+            return Token(self.type_, int(str(self.value) + str(other.value)))
+        else:
+            raise Exception('error adding tokens: incorrect token type')
+
 
 class Interpreter:
     def __init__(self, text):
