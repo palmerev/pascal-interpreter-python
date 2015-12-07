@@ -48,6 +48,9 @@ class Interpreter:
         # get a character at the position self.pos and decide
         # what token to create based on the single character
         current_char = text[self.pos]
+        while current_char.isspace():
+            self.pos += 1
+            current_char = text[self.pos]
 
         # if the character is a digit, convert it to an INTEGER
         # create an INTEGER token, increment self.pos
@@ -108,7 +111,7 @@ def main():
             break
         if not text:
             continue
-        interpreter = Interpreter(text)
+        interpreter = Interpreter(text.strip())
         result = interpreter.expr()
         print(result)
 
