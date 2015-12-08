@@ -65,14 +65,17 @@ class Interpreter:
             self.pos += 1
             current_char = text[self.pos]
 
-        # if the character is a digit, convert it to an INTEGER
+        # while each character is a digit, convert it to an INTEGER
         # create an INTEGER token, increment self.pos
         # index to point to the next character after the digit,
         # and return the INTEGER token
-        if current_char.isdigit():
-            token = Token(INTEGER, int(current_char))
+        token_chars = []
+        while current_char.isdigit():
+            token_chars.append(current_char)
             self.pos += 1
-            return token
+            current_char = text[self.pos]
+        token = Token(INTEGER, int("".join(token_chars)))
+        return token
 
         if current_char == '+':
             token = Token(PLUS, current_char)
@@ -80,6 +83,24 @@ class Interpreter:
             return token
 
         self.error()
+
+    def peek(self):
+        """examines the next character and returns its token type,
+        or None if it's not a valid lexeme"""
+        # if there are characters to read beyond self.pos,
+        # examine the next character
+        if self.pos < len(self.text) - 1:
+            next_char = self.text[self.pos + 1]
+            # return the token type of the next character
+            if next_char.isdigit():
+                return INTEGER
+            elif next_char == '+':
+                return PLUS
+            # if character isn't a valid token
+            else:
+                return None
+        else:
+            return EOF
 
     def eat(self, token_type):
         # compare the current token type with the passed token type
