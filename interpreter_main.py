@@ -45,6 +45,21 @@ class Interpreter:
     def error(self):
         raise Exception('Error parsing input')
 
+    def parse_int(self):
+        token_chars = []
+        current_char = self.text[self.pos]
+        while current_char.isdigit():
+            token_chars.append(current_char)
+            # if the next character is an INTEGER reassign the current_char
+            if self.peek() == INTEGER:
+                self.pos += 1
+                current_char = self.text[self.pos]
+            # otherwise, stop parsing
+            else:
+                break
+        token = Token(INTEGER, int("".join(token_chars)))
+        return token
+
     def get_next_token(self):
         """
         Lexical analyzer (also known as a scanner or tokenizer)
@@ -69,15 +84,12 @@ class Interpreter:
         # create an INTEGER token, increment self.pos
         # index to point to the next character after the digit,
         # and return the INTEGER token
-        token_chars = []
-        while current_char.isdigit():
-            token_chars.append(current_char)
+        if current_char.isdigit():
+            token = self.parse_int()
             self.pos += 1
-            current_char = text[self.pos]
-        token = Token(INTEGER, int("".join(token_chars)))
-        return token
+            return token
 
-        if current_char == '+':
+        elif current_char == '+':
             token = Token(PLUS, current_char)
             self.pos += 1
             return token
