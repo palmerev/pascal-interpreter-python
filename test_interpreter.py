@@ -54,6 +54,13 @@ class InterpreterFloorDivisionTestCase(unittest.TestCase):
         self.assertEqual(result, 1)
 
 
+class InterpreterLongExpressionTestCase(unittest.TestCase):
+    def test_three_term_expression(self):
+        self.interpreter = Interpreter("1 + 5 / 2")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 3)
+
+
 class TokenTestCase(unittest.TestCase):
     def setUp(self):
         self.plus_token = Token(PLUS, '+')
