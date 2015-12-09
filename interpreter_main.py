@@ -41,6 +41,7 @@ class Interpreter:
         self.pos = 0
         # current token instance
         self.current_token = None
+        self.current_char = self.text[self.pos]
 
     def error(self):
         raise Exception('Error parsing input')
