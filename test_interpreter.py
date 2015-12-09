@@ -35,6 +35,25 @@ class InterpreterSubtractionTestCase(unittest.TestCase):
         self.assertEqual(result, 1)
 
 
+class InterpreterMultiplicationTestCase(unittest.TestCase):
+    def test_multiplication(self):
+        self.interpreter = Interpreter("2 * 3")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 6)
+
+
+class InterpreterFloorDivisionTestCase(unittest.TestCase):
+    def test_floor_division_no_truncation(self):
+        self.interpreter = Interpreter("4 / 2")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 2)
+
+    def test_floor_division_with_truncated_result(self):
+        self.interpreter = Interpreter("3 / 2")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 1)
+
+
 class TokenTestCase(unittest.TestCase):
     def setUp(self):
         self.plus_token = Token(PLUS, '+')
