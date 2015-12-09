@@ -133,41 +133,53 @@ class Interpreter:
         expr -> INTEGER MINUS INTEGER
         expr -> INTEGER MULT INTEGER
         expr -> INTEGER DIV INTEGER
+        expr -> expr OP INTEGER
+        expr -> expr OP expr [OP expr, ...]
         """
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
+        while self.current_token is not None:
+            # we expect the current token to be an integer
+            left = self.current_token
+            self.eat(INTEGER)
+            # we expect the current token to be a '+' or  '-'
+            op = self.current_token
+            if op.type_ == PLUS:
+                self.eat(PLUS)
+            elif op.type_ == MULT:
+                self.eat(MULT)
+            elif op.type_ == DIV:
+                self.eat(DIV)
+            else:
+                self.eat(MINUS)
 
-        # we expect the current token to be an integer
-        left = self.current_token
-        self.eat(INTEGER)
-        # we expect the current token to be a '+' or  '-'
-        op = self.current_token
-        if op.type_ == PLUS:
-            self.eat(PLUS)
-        elif op.type_ == MULT:
-            self.eat(MULT)
-        elif op.type_ == DIV:
-            self.eat(DIV)
-        else:
-            self.eat(MINUS)
-
-        # we expect the current token to be an integer
-        right = self.current_token
-        self.eat(INTEGER)
-        # after the above call self.current_token is set to EOF token
-
-        # at this point INTEGER PLUS INTEGER or INTEGER MINUS INTEGER sequence
-        # of tokens has been successfully found and the method can just return
-        # the result of adding or substracting two integers
-        if op.type_ == PLUS:
-            result = left.value + right.value
-        elif op.type_ == MINUS:
-            result = left.value - right.value
-        elif op.type_ == MULT:
-            result = left.value * right.value
-        elif op.type_ == DIV:
-            result = int(left.value / right.value)
-        return result
+            # we expect the current token to be an integer
+            right = self.current_token
+            self.eat(INTEGER)
+            # after the above call self.current_token is set to EOF token
+            # at this point a valid sequence
+            # of tokens has been successfully found and the method can just return
+            # the result of the operation on two integers
+            if op.type_ == PLUS:
+                result = left.value + right.value
+            elif op.type_ == MINUS:
+                result = left.value - right.value
+            elif op.type_ == MULT:
+                result = left.value * right.value
+            elif op.type_ == DIV:
+                result = int(left.value / right.value)
+            # at this point we've eaten an expression's worth of input
+            if self.current_token is None:
+                # if no more expressions to evaluate, return overall result
+                return result
+            else:
+                # there is still more input to parse
+                # concatenate result with remaining characters,
+                # reset pos to the beginning of the new text
+                self.text = str(result) + self.text[self.pos - 1:]
+                self.pos = 0
+                self.current_char = self.text[self.pos]
+                self.current_token = self.get_next_token()
 
 
 def main():
