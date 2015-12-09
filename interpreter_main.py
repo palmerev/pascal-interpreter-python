@@ -3,7 +3,7 @@
 # Token types
 #
 # EOF (end of file) indicates there is no more input left for lexical analysis
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'EOF'
+INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS' 'EOF'
 
 
 class Token:
@@ -72,28 +72,24 @@ class Interpreter:
 
         Responsible for breaking input apart into tokens, one token at a time.
         """
-        text = self.text
+        while self.current_char is not None:
+            if self.current_char.isspace():
+                self.skip_whitespace()
+                continue
 
-        # return EOF if self.pos is past the end of self.text
-        # input left to convert into tokens
-        if self.pos > len(text) - 1:
-            return Token(EOF, None)
+            elif self.current_char.isdigit():
+                return Token(INTEGER, self.parse_int())
 
-        # while each character is a digit, convert it to an INTEGER
-        # create an INTEGER token, increment self.pos
-        # index to point to the next character after the digit,
-        # and return the INTEGER token
-        if current_char.isdigit():
-            token = self.parse_int()
-            self.pos += 1
-            return token
+            elif self.current_char == '+':
+                self.advance()
+                return Token(PLUS, '+')
 
-        elif current_char == '+':
-            token = Token(PLUS, current_char)
-            self.pos += 1
-            return token
+            elif self.current_char == '-':
+                self.advance()
+                return Token(MINUS, '-')
 
-        self.error()
+            else:
+                self.error()
 
     def peek(self):
         """examines the next character and returns its token type,
