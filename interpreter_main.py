@@ -92,6 +92,10 @@ class Interpreter:
                 self.advance()
                 return Token(MULT, '*')
 
+            elif self.current_char == '/':
+                self.advance()
+                return Token(DIV, '/')
+
             else:
                 self.error()
 
@@ -128,6 +132,7 @@ class Interpreter:
         expr -> INTEGER PLUS INTEGER
         expr -> INTEGER MINUS INTEGER
         expr -> INTEGER MULT INTEGER
+        expr -> INTEGER DIV INTEGER
         """
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
@@ -141,6 +146,8 @@ class Interpreter:
             self.eat(PLUS)
         elif op.type_ == MULT:
             self.eat(MULT)
+        elif op.type_ == DIV:
+            self.eat(DIV)
         else:
             self.eat(MINUS)
 
@@ -158,6 +165,8 @@ class Interpreter:
             result = left.value - right.value
         elif op.type_ == MULT:
             result = left.value * right.value
+        elif op.type_ == DIV:
+            result = int(left.value / right.value)
         return result
 
 
