@@ -40,6 +40,10 @@ class InterpreterSubtractionTestCase(unittest.TestCase):
     def tearDown(self):
         del self.interpreter
 
+    def test_subtraction(self):
+        self.interpreter.text = "13 - 12"
+        result = self.interpreter.expr()
+        self.assertEqual(result, 1)
 
 class TokenTestCase(unittest.TestCase):
     def setUp(self):
