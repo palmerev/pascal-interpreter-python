@@ -3,14 +3,14 @@
 # Token types
 #
 # EOF (end of file) indicates there is no more input left for lexical analysis
-INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
+INTEGER, PLUS, MINUS, MULT, DIV, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MULT', 'DIV', 'EOF'
 
 
 class Token:
     def __init__(self, type_, value):
-        # token type: INTEGER, PLUS, or EOF
+        # token type: INTEGER, PLUS, MINUS, MULT, DIV or EOF
         self.type_ = type_
-        # token value: 0 through 9, +, or None
+        # token value: 0 through 9, +, -, *, /, or None
         self.value = value
 
     def __str__(self):
@@ -88,6 +88,10 @@ class Interpreter:
                 self.advance()
                 return Token(MINUS, '-')
 
+            elif self.current_char == '*':
+                self.advance()
+                return Token(MULT, '*')
+
             else:
                 self.error()
 
@@ -123,6 +127,7 @@ class Interpreter:
         """
         expr -> INTEGER PLUS INTEGER
         expr -> INTEGER MINUS INTEGER
+        expr -> INTEGER MULT INTEGER
         """
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
@@ -134,6 +139,8 @@ class Interpreter:
         op = self.current_token
         if op.type_ == PLUS:
             self.eat(PLUS)
+        elif op.type_ == MULT:
+            self.eat(MULT)
         else:
             self.eat(MINUS)
 
@@ -147,8 +154,10 @@ class Interpreter:
         # the result of adding or substracting two integers
         if op.type_ == PLUS:
             result = left.value + right.value
-        else:
+        elif op.type_ == MINUS:
             result = left.value - right.value
+        elif op.type_ == MULT:
+            result = left.value * right.value
         return result
 
 
