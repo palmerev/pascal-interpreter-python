@@ -11,19 +11,19 @@ class InterpreterAdditionTestCase(unittest.TestCase):
         result = self.interpreter.expr()
         self.assertEqual(result, 2)
 
-    def test_parse_int_single_digit(self):
+    def test_integer_single_digit(self):
         self.interpreter = Interpreter("1")
-        one = self.interpreter.parse_int()
+        one = self.interpreter.integer()
         self.assertEqual(one, 1)
 
-    def test_parse_int_double_digit(self):
+    def test_integer_double_digit(self):
         self.interpreter = Interpreter("12")
-        twelve = self.interpreter.parse_int()
+        twelve = self.interpreter.integer()
         self.assertEqual(twelve, 12)
 
-    def test_parse_int_multidigit_plus_digit(self):
+    def test_integer_multidigit_plus_digit(self):
         self.interpreter = Interpreter("123+4")
-        one = self.interpreter.parse_int()
+        one = self.interpreter.integer()
         self.assertEqual(one, 123)
 
 

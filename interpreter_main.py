@@ -42,6 +42,9 @@ class Interpreter:
         # current token instance
         self.current_token = None
         self.current_char = self.text[self.pos]
+    ########################################################
+    # Lexer - breaks the input into tokens
+    ########################################################
 
     def error(self):
         raise Exception('Error parsing input')
@@ -58,7 +61,7 @@ class Interpreter:
         while self.current_char is not None and self.current_char.isspace():
             self.advance()
 
-    def parse_int(self):
+    def integer(self):
         """Return a multidigit integer read from input"""
         token_string = ''
         while self.current_char is not None and self.current_char.isdigit():
@@ -78,7 +81,7 @@ class Interpreter:
                 continue
 
             elif self.current_char.isdigit():
-                return Token(INTEGER, self.parse_int())
+                return Token(INTEGER, self.integer())
 
             elif self.current_char == '+':
                 self.advance()
