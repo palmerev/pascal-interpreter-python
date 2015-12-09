@@ -102,24 +102,6 @@ class Interpreter:
             else:
                 self.error()
 
-    def peek(self):
-        """examines the next character and returns its token type,
-        or None if it's not a valid lexeme"""
-        # if there are characters to read beyond self.pos,
-        # examine the next character
-        if self.pos < len(self.text) - 1:
-            next_char = self.text[self.pos + 1]
-            # return the token type of the next character
-            if next_char.isdigit():
-                return INTEGER
-            elif next_char == '+':
-                return PLUS
-            # if character isn't a valid token
-            else:
-                return None
-        else:
-            return EOF
-
     def eat(self, token_type):
         # compare the current token type with the passed token type
         # and if they match then "eat" the current token and assign
