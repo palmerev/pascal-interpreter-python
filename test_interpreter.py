@@ -5,40 +5,34 @@ from interpreter_main import Token, Interpreter, INTEGER, PLUS, EOF
 
 
 class InterpreterAdditionTestCase(unittest.TestCase):
-    def setUp(self):
-        self.interpreter = Interpreter(" ")
-
-    def tearDown(self):
-        del self.interpreter
 
     def test_single_digit_addition_no_whitespace(self):
-        self.interpreter.text = "1+1"
+        self.interpreter = Interpreter("1+1")
         result = self.interpreter.expr()
         self.assertEqual(result, 2)
 
     def test_parse_int_single_digit(self):
-        self.interpreter.text = "1"
+        self.interpreter = Interpreter("1")
         one = self.interpreter.parse_int()
-        self.assertEqual(one.value, Token(INTEGER, 1).value)
+        self.assertEqual(one, 1)
 
     def test_parse_int_double_digit(self):
-        self.interpreter.text = "12"
+        self.interpreter = Interpreter("12")
         twelve = self.interpreter.parse_int()
-        self.assertEqual(twelve.value, Token(INTEGER, 12).value)
+        self.assertEqual(twelve, 12)
 
     def test_parse_int_multidigit_plus_digit(self):
-        self.interpreter.text = "123+4"
+        self.interpreter = Interpreter("123+4")
         one = self.interpreter.parse_int()
-        self.assertEqual(one.value, Token(INTEGER, 123).value)
-        self.assertEqual(self.interpreter.pos, 2)  # pos on last char of integer
+        self.assertEqual(one, 123)
 
 
 class InterpreterSubtractionTestCase(unittest.TestCase):
-    def setUp(self):
-        self.interpreter = Interpreter(" ")
 
-    def tearDown(self):
-        del self.interpreter
+    def test_subtraction(self):
+        self.interpreter = Interpreter("13 - 12")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 1)
 
 
 class TokenTestCase(unittest.TestCase):
