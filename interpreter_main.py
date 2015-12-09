@@ -46,20 +46,25 @@ class Interpreter:
     def error(self):
         raise Exception('Error parsing input')
 
+    def advance(self):
+        """Increment self.pos and set self.current_char."""
+        self.pos += 1
+        if self.pos > len(self.text) - 1:
+            self.current_char = None  # indicates end of input
+        else:
+            self.current_char = self.text[self.pos]
+
+    def skip_whitespace(self):
+        while self.current_char is not None and self.current_char.isspace():
+            self.advance()
+
     def parse_int(self):
-        token_chars = []
-        current_char = self.text[self.pos]
-        while current_char.isdigit():
-            token_chars.append(current_char)
-            # if the next character is an INTEGER reassign the current_char
-            if self.peek() == INTEGER:
-                self.pos += 1
-                current_char = self.text[self.pos]
-            # otherwise, stop parsing
-            else:
-                break
-        token = Token(INTEGER, int("".join(token_chars)))
-        return token
+        """Return a multidigit integer read from input"""
+        token_string = ''
+        while self.current_char is not None and self.current_char.isdigit():
+            token_string += self.current_char
+            self.advance()
+        return int(token_string)
 
     def get_next_token(self):
         """
@@ -73,13 +78,6 @@ class Interpreter:
         # input left to convert into tokens
         if self.pos > len(text) - 1:
             return Token(EOF, None)
-
-        # get a character at the position self.pos and decide
-        # what token to create based on the single character
-        current_char = text[self.pos]
-        while current_char.isspace():
-            self.pos += 1
-            current_char = text[self.pos]
 
         # while each character is a digit, convert it to an INTEGER
         # create an INTEGER token, increment self.pos
