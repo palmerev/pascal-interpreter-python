@@ -3,7 +3,7 @@
 # Token types
 #
 # EOF (end of file) indicates there is no more input left for lexical analysis
-INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS' 'EOF'
+INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
 
 
 class Token:
@@ -120,27 +120,35 @@ class Interpreter:
             self.error()
 
     def expr(self):
-        """expr -> INTEGER PLUS INTEGER"""
-        # import pdb
-        # pdb.set_trace()
-
+        """
+        expr -> INTEGER PLUS INTEGER
+        expr -> INTEGER MINUS INTEGER
+        """
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
 
-        # we expect the current token to be a single-digit integer
+        # we expect the current token to be an integer
         left = self.current_token
         self.eat(INTEGER)
-        # we expect the current token to be a '+' token
-        # op = self.current_token
-        self.eat(PLUS)
-        # we expect the the current token to be a single-digit integer
+        # we expect the current token to be a '+' or  '-'
+        op = self.current_token
+        if op.type_ == PLUS:
+            self.eat(PLUS)
+        else:
+            self.eat(MINUS)
+
+        # we expect the current token to be an integer
         right = self.current_token
         self.eat(INTEGER)
         # after the above call self.current_token is set to EOF token
-        # at this point INTEGER PLUS INTEGER sequence of tokens has been
-        # successfully found and the method can just return the result of
-        # adding two integers
-        result = left.value + right.value
+
+        # at this point INTEGER PLUS INTEGER or INTEGER MINUS INTEGER sequence
+        # of tokens has been successfully found and the method can just return
+        # the result of adding or substracting two integers
+        if op.type_ == PLUS:
+            result = left.value + right.value
+        else:
+            result = left.value - right.value
         return result
 
 
