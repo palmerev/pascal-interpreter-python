@@ -11,19 +11,19 @@ class InterpreterAdditionTestCase(unittest.TestCase):
         result = self.interpreter.expr()
         self.assertEqual(result, 2)
 
-    def test_parse_int_single_digit(self):
+    def test_integer_single_digit(self):
         self.interpreter = Interpreter("1")
-        one = self.interpreter.parse_int()
+        one = self.interpreter.integer()
         self.assertEqual(one, 1)
 
-    def test_parse_int_double_digit(self):
+    def test_integer_double_digit(self):
         self.interpreter = Interpreter("12")
-        twelve = self.interpreter.parse_int()
+        twelve = self.interpreter.integer()
         self.assertEqual(twelve, 12)
 
-    def test_parse_int_multidigit_plus_digit(self):
+    def test_integer_multidigit_plus_digit(self):
         self.interpreter = Interpreter("123+4")
-        one = self.interpreter.parse_int()
+        one = self.interpreter.integer()
         self.assertEqual(one, 123)
 
 
@@ -33,6 +33,32 @@ class InterpreterSubtractionTestCase(unittest.TestCase):
         self.interpreter = Interpreter("13 - 12")
         result = self.interpreter.expr()
         self.assertEqual(result, 1)
+
+
+class InterpreterMultiplicationTestCase(unittest.TestCase):
+    def test_multiplication(self):
+        self.interpreter = Interpreter("2 * 3")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 6)
+
+
+class InterpreterFloorDivisionTestCase(unittest.TestCase):
+    def test_floor_division_no_truncation(self):
+        self.interpreter = Interpreter("4 / 2")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 2)
+
+    def test_floor_division_with_truncated_result(self):
+        self.interpreter = Interpreter("3 / 2")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 1)
+
+
+class InterpreterLongExpressionTestCase(unittest.TestCase):
+    def test_three_term_expression(self):
+        self.interpreter = Interpreter("1 + 5 / 2")
+        result = self.interpreter.expr()
+        self.assertEqual(result, 3)
 
 
 class TokenTestCase(unittest.TestCase):
