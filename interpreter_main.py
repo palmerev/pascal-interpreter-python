@@ -102,6 +102,9 @@ class Interpreter:
             else:
                 self.error()
 
+    #####################################################
+    # Parser / Interpreter code
+    #####################################################
     def eat(self, token_type):
         # compare the current token type with the passed token type
         # and if they match then "eat" the current token and assign
@@ -112,8 +115,15 @@ class Interpreter:
         else:
             self.error()
 
+    def term(self):
+        """Return an INTEGER token value"""
+        token = self.current_token
+        self.eat(INTEGER)
+        return token.value
+
     def expr(self):
         """
+        Arithmetic expression parser / interpreter
         expr -> INTEGER PLUS INTEGER
         expr -> INTEGER MINUS INTEGER
         expr -> INTEGER MULT INTEGER
@@ -122,36 +132,23 @@ class Interpreter:
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
 
-        # we expect the current token to be an integer
-        left = self.current_token
-        self.eat(INTEGER)
-        # we expect the current token to be a '+' or  '-'
-        op = self.current_token
-        if op.type_ == PLUS:
-            self.eat(PLUS)
-        elif op.type_ == MULT:
-            self.eat(MULT)
-        elif op.type_ == DIV:
-            self.eat(DIV)
-        else:
-            self.eat(MINUS)
+        result = self.term()
+        while self.current_token is not None and self.current_token.type_ in (PLUS, MINUS, MULT, DIV):
 
-        # we expect the current token to be an integer
-        right = self.current_token
-        self.eat(INTEGER)
-        # after the above call self.current_token is set to EOF token
+            token = self.current_token
+            if token.type_ == PLUS:
+                self.eat(PLUS)
+                result = result + self.term()
+            elif token.type_ == MULT:
+                self.eat(MULT)
+                result = result * self.term()
+            elif token.type_ == DIV:
+                self.eat(DIV)
+                result = int(result / self.term())
+            elif token.type_ == MINUS:
+                self.eat(MINUS)
+                result = result - self.term()
 
-        # at this point INTEGER PLUS INTEGER or INTEGER MINUS INTEGER sequence
-        # of tokens has been successfully found and the method can just return
-        # the result of adding or substracting two integers
-        if op.type_ == PLUS:
-            result = left.value + right.value
-        elif op.type_ == MINUS:
-            result = left.value - right.value
-        elif op.type_ == MULT:
-            result = left.value * right.value
-        elif op.type_ == DIV:
-            result = int(left.value / right.value)
         return result
 
 
