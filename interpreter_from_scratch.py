@@ -8,12 +8,18 @@
 #   parser: recognizes expressions based on a stream of tokens
 
 
-class Interpreter:
-    pass
-
-
 class Token:
-    pass
+    def __init__(self, kind, value):
+        self.kind = kind
+        self.value = value
+
+    def __str__(self):
+        return "Token({}, {})".format(self.kind, self.value)
+
+
+class Interpreter:
+    def __init__(self, text):
+        self.text = text
 
 
 def main():
