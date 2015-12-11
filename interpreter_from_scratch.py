@@ -13,7 +13,7 @@ INT, DIV, MULT = 'INT', 'DIV', 'MULT'
 
 class TokenEP:
     def __init__(self, kind, value):
-        self.kind = kind
+        self.kind = kind  # token type
         self.value = value
 
     def __str__(self):
@@ -23,6 +23,9 @@ class TokenEP:
 class InterpreterEP:
     def __init__(self, text):
         self.text = text
+        self.pos = 0
+        self.current_char = self.text[self.pos]
+        self.current_token = None
 
     def expr(self):
         try:
