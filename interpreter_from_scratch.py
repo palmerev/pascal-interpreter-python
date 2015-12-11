@@ -27,12 +27,32 @@ class InterpreterEP:
         self.current_char = self.text[self.pos]
         self.current_token = None
 
+    def error(self):
+        raise Exception("error parsing input")
+
+    def advance(self):
+        if self.current_char is not None and self.pos > len(self.text) - 1:
+            self.pos += 1
+            self.current_char = self.text[self.pos]
+
+    def eat(self, token_type):
+        if self.current_token.kind == token_type:
+            pass
+        else:
+            self.error()
+
+    def get_next_token(self):
+        pass
+
     def expr(self):
         try:
             result = int(self.text)
             return result
         except ValueError:
             pass
+
+
+
 
 
 def main():
