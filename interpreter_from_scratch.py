@@ -31,18 +31,39 @@ class InterpreterEP:
         raise Exception("error parsing input")
 
     def advance(self):
-        if self.current_char is not None and self.pos > len(self.text) - 1:
+        if self.current_char is not None and self.pos < len(self.text) - 1:
             self.pos += 1
             self.current_char = self.text[self.pos]
+        else:
+            self.current_char = None
+
+    def integer(self):
+        result = []
+        while self.current_char is not None and self.current_char.isdigit():
+            result.append(self.current_char)
+            self.advance()
+        assert len(result) > 0
+        return TokenEP(INT, "".join(result))
 
     def eat(self, token_type):
         if self.current_token.kind == token_type:
-            pass
+            self.advance()
+            self.current_token = self.get_next_token()
         else:
             self.error()
 
     def get_next_token(self):
-        pass
+        if self.current_char is not None:
+            if self.current_char.isdigit():
+                return self.integer()
+            elif self.current_char == '/':
+                return TokenEP(DIV, self.current_char)
+            elif self.current_char == '*':
+                return TokenEP(MULT, self.current_char)
+            else:
+                self.error()
+        else:
+            return None
 
     def expr(self):
         try:

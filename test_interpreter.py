@@ -2,7 +2,7 @@
 
 import unittest
 from interpreter_main import Token, Interpreter, INTEGER, PLUS, EOF
-from interpreter_from_scratch import InterpreterEP
+from interpreter_from_scratch import InterpreterEP, TokenEP, INT
 
 
 class InterpreterAdditionTestCase(unittest.TestCase):
@@ -89,7 +89,16 @@ class InterpreterFromScratchTestCase(unittest.TestCase):
         self.interpreter = InterpreterEP(txt)
         self.assertEqual(self.interpreter.expr(), int(txt))
 
+    @unittest.skip
     def test_expr_multiplication(self):
         txt = "2*3"
         self.interpreter = InterpreterEP(txt)
         self.assertEqual(self.interpreter.expr(), eval("2*3"))
+
+    def test_get_next_token_returns_token_of_current_char(self):
+        txt = "1"
+        self.interpreter = InterpreterEP(txt)
+        token = self.interpreter.get_next_token()
+        self.assertIsInstance(token, TokenEP)
+        self.assertEqual(token.kind, INT)
+        self.assertEqual(token.value, '1')
