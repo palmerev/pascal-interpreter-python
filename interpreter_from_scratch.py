@@ -47,7 +47,7 @@ class InterpreterEP:
 
     def eat(self, token_type):
         if self.current_token.kind == token_type:
-            self.advance()
+            # self.advance()
             self.current_token = self.get_next_token()
         else:
             self.error()
@@ -57,19 +57,23 @@ class InterpreterEP:
             if self.current_char.isdigit():
                 return self.integer()
             elif self.current_char == '/':
-                return TokenEP(DIV, self.current_char)
+                token = TokenEP(DIV, self.current_char)
+                self.advance()
+                return token
             elif self.current_char == '*':
-                return TokenEP(MULT, self.current_char)
+                token = TokenEP(MULT, self.current_char)
+                self.advance()
+                return token
             else:
                 self.error()
         else:
             return None
 
     def expr(self):
-        try:
-            result = int(self.text)
-            return result
-        except ValueError:
+        self.current_token = self.get_next_token()
+        term = self.integer()
+
+        while self.current_token is not None:
             pass
 
 

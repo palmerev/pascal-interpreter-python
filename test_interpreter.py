@@ -84,6 +84,7 @@ class InterpreterFromScratchTestCase(unittest.TestCase):
         self.interpreter = InterpreterEP(txt)
         self.assertEqual(self.interpreter.text, txt)
 
+    @unittest.skip
     def test_expr_returns_same_input_if_integer(self):
         txt = "3"
         self.interpreter = InterpreterEP(txt)
@@ -102,3 +103,14 @@ class InterpreterFromScratchTestCase(unittest.TestCase):
         self.assertIsInstance(token, TokenEP)
         self.assertEqual(token.kind, INT)
         self.assertEqual(token.value, '1')
+
+    def test_get_next_token_tokenizes_expression(self):
+        txt = "6/2"
+        self.interpreter = InterpreterEP(txt)
+        tkn1 = self.interpreter.get_next_token()
+        self.assertEqual(tkn1.value, "6")
+        tkn2 = self.interpreter.get_next_token()
+        self.assertEqual(tkn2.value, "/")
+        tkn3 = self.interpreter.get_next_token()
+        self.assertEqual(tkn3.value, "2")
+        self.assertIsNone(self.interpreter.current_token)
