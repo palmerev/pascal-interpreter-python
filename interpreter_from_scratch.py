@@ -3,12 +3,15 @@
 # an interpreter to process
 # arithmetic expressions with multiplication and division
 # NEEDS:
-#   token types 'INTEGER', 'DIV', 'MULT'
+#   token types 'INT', 'DIV', 'MULT'
 #   lexer: breaks input into tokens
 #   parser: recognizes expressions based on a stream of tokens
 
+# token types
+INT, DIV, MULT = 'INT', 'DIV', 'MULT'
 
-class Token:
+
+class TokenEP:
     def __init__(self, kind, value):
         self.kind = kind
         self.value = value
@@ -17,9 +20,16 @@ class Token:
         return "Token({}, {})".format(self.kind, self.value)
 
 
-class Interpreter:
+class InterpreterEP:
     def __init__(self, text):
         self.text = text
+
+    def expr(self):
+        try:
+            result = int(self.text)
+            return result
+        except ValueError:
+            pass
 
 
 def main():
