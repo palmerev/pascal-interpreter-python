@@ -54,9 +54,11 @@ class InterpreterEP:
             self.error()
 
     def get_next_token(self):
+        """Return the next token from the input stream if there are more
+        characters to process, otherwise return None"""
         if self.current_char is not None:
             if self.current_char.isdigit():
-                return self.integer()
+                return TokenEP(INT, self.integer())
             elif self.current_char == '/':
                 token = TokenEP(DIV, self.current_char)
                 self.advance()
