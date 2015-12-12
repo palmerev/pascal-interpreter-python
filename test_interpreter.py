@@ -94,23 +94,41 @@ class InterpreterFromScratchTestCase(unittest.TestCase):
     def test_expr_multiplication(self):
         txt = "2*3"
         self.interpreter = InterpreterEP(txt)
-        self.assertEqual(self.interpreter.expr(), eval("2*3"))
+        self.assertEqual(self.interpreter.expr(), eval(txt))
 
     def test_get_next_token_returns_token_of_current_char(self):
-        txt = "1"
+        txt = "12"
         self.interpreter = InterpreterEP(txt)
         token = self.interpreter.get_next_token()
         self.assertIsInstance(token, TokenEP)
         self.assertEqual(token.kind, INT)
-        self.assertEqual(token.value, '1')
+        self.assertEqual(token.value, int(txt))
 
     def test_get_next_token_tokenizes_expression(self):
         txt = "6/2"
         self.interpreter = InterpreterEP(txt)
         tkn1 = self.interpreter.get_next_token()
-        self.assertEqual(tkn1.value, "6")
+        self.assertEqual(tkn1.value, 6)
         tkn2 = self.interpreter.get_next_token()
         self.assertEqual(tkn2.value, "/")
         tkn3 = self.interpreter.get_next_token()
-        self.assertEqual(tkn3.value, "2")
+        self.assertEqual(tkn3.value, 2)
         self.assertIsNone(self.interpreter.current_token)
+
+    def test_expr_returns_single_int(self):
+        txt = "12"
+        self.interpreter = InterpreterEP(txt)
+        result = self.interpreter.expr()
+        self.assertEqual(result, int(txt))
+
+    def test_expr_evaluates_simple_expression(self):
+        txt = "6/2"
+        self.interpreter = InterpreterEP(txt)
+        result = self.interpreter.expr()
+        self.assertEqual(result, eval(txt))
+
+    def test_expr_evaluates_long_expression(self):
+        txt = "160/2*30"
+        self.interpreter = InterpreterEP(txt)
+        result = self.interpreter.expr()
+        self.assertEqual(result, eval(txt))
