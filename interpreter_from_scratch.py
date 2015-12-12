@@ -47,6 +47,8 @@ class InterpreterEP:
         return int("".join(result))
 
     def eat(self, token_type):
+        """If the expected token_type matches the current token, advance the
+        pointer, else throw an error"""
         if self.current_token.kind == token_type:
             # self.advance()
             self.current_token = self.get_next_token()
