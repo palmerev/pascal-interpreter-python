@@ -38,12 +38,13 @@ class InterpreterEP:
             self.current_char = None
 
     def integer(self):
+        """Return the next integer value found in the input stream"""
         result = []
         while self.current_char is not None and self.current_char.isdigit():
             result.append(self.current_char)
             self.advance()
         assert len(result) > 0
-        return TokenEP(INT, "".join(result))
+        return int("".join(result))
 
     def eat(self, token_type):
         if self.current_token.kind == token_type:
