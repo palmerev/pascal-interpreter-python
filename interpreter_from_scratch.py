@@ -75,21 +75,39 @@ class InterpreterEP:
             return None
 
     def expr(self):
+        # we expect the first token to be an integer
         self.current_token = self.get_next_token()
-        term = self.integer()
-
+        result = int(self.current_token.value)
+        op = None
         while self.current_token is not None:
-            pass
+            if self.current_token.kind == MULT:
+                op = MULT
+                self.eat(MULT)
+            elif self.current_token.kind == DIV:
+                op = DIV
+                self.eat(DIV)
 
+            if op == DIV:
+                result = int(result / self.current_token.value)
+            elif op == MULT:
+                result = result * int(self.current_token.value)
+            self.eat(INT)
 
-
+        return result
 
 
 def main():
     while True:
-        text = input("mult/div >")
+        try:
+            text = input("mult/div> ")
+        except EOFError:
+            print()
+            break
         if not text:
             continue
+        interpreter = InterpreterEP(text.strip())
+        result = interpreter.expr()
+        print(result)
 
 if __name__ == '__main__':
     main()
