@@ -3,7 +3,8 @@
 # Token types
 #
 # EOF (end of file) indicates there is no more input left for lexical analysis
-INTEGER, PLUS, MINUS, MULT, DIV, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MULT', 'DIV', 'EOF'
+INTEGER, PLUS, MINUS, MULT, DIV, EOF = \
+    'INTEGER', 'PLUS', 'MINUS', 'MULT', 'DIV', 'EOF'
 
 
 class Token:
@@ -33,18 +34,13 @@ class Token:
             raise Exception('error adding tokens: incorrect token type')
 
 
-class Interpreter:
+class Lexer:
     def __init__(self, text):
         # client string input e.g. "3+5"
         self.text = text
         # self.pos is an index into self.text
         self.pos = 0
-        # current token instance
-        self.current_token = None
         self.current_char = self.text[self.pos]
-    ########################################################
-    # Lexer - breaks the input into tokens
-    ########################################################
 
     def error(self):
         raise Exception('Error parsing input')
@@ -102,16 +98,22 @@ class Interpreter:
             else:
                 self.error()
 
-    #####################################################
-    # Parser / Interpreter code
-    #####################################################
+
+class Interpreter:
+    def __init__(self, lexer):
+        self.lexer = lexer
+        self.current_token = self.lexer.get_next_token()
+
+    def error(self):
+        raise Exception('Invalid syntax')
+
     def eat(self, token_type):
         # compare the current token type with the passed token type
         # and if they match then "eat" the current token and assign
         # the next token to self.current_token,
         # otherwise raise an Exception
         if self.current_token.type_ == token_type:
-            self.current_token = self.get_next_token()
+            self.current_token = self.lexer.get_next_token()
         else:
             self.error()
 
@@ -129,9 +131,6 @@ class Interpreter:
         expr -> INTEGER MULT INTEGER
         expr -> INTEGER DIV INTEGER
         """
-        # set current token to the first token taken from the input
-        self.current_token = self.get_next_token()
-
         result = self.term()
         while self.current_token is not None and self.current_token.type_ in (PLUS, MINUS, MULT, DIV):
 
@@ -160,7 +159,8 @@ def main():
             break
         if not text:
             continue
-        interpreter = Interpreter(text.strip())
+        lexer = Lexer(text.strip())
+        interpreter = Interpreter(lexer)
         result = interpreter.expr()
         print(result)
 

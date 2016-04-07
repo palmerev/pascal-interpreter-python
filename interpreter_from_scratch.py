@@ -20,12 +20,11 @@ class TokenEP:
         return "Token({}, {})".format(self.kind, self.value)
 
 
-class InterpreterEP:
+class LexerEP:
     def __init__(self, text):
         self.text = text
         self.pos = 0
         self.current_char = self.text[self.pos]
-        self.current_token = None
 
     def error(self):
         raise Exception("error parsing input")
@@ -46,15 +45,6 @@ class InterpreterEP:
         assert len(result) > 0
         return int("".join(result))
 
-    def eat(self, token_type):
-        """If the expected token_type matches the current token, advance the
-        pointer, else throw an error"""
-        if self.current_token.kind == token_type:
-            # self.advance()
-            self.current_token = self.get_next_token()
-        else:
-            self.error()
-
     def get_next_token(self):
         """Return the next token from the input stream if there are more
         characters to process, otherwise return None"""
@@ -74,10 +64,32 @@ class InterpreterEP:
         else:
             return None
 
+
+class InterpreterEP:
+    def __init__(self, lexer):
+        self.lexer = lexer
+        self.current_token = self.lexer.get_next_token()
+
+    def error(self):
+        raise Exception('Invalid syntax')
+
+    def eat(self, token_type):
+        """If the expected token_type matches the current token, advance the
+        pointer, else throw an error"""
+        if self.current_token.kind == token_type:
+            # self.advance()
+            self.current_token = self.lexer.get_next_token()
+        else:
+            self.error()
+
+    def term(self):
+        token = self.current_token
+        self.eat(INT)
+        return int(token.value)
+
     def expr(self):
         # we expect the first token to be an integer
-        self.current_token = self.get_next_token()
-        result = int(self.current_token.value)
+        result = self.term()
         op = None
         while self.current_token is not None:
             if self.current_token.kind == MULT:
@@ -88,10 +100,9 @@ class InterpreterEP:
                 self.eat(DIV)
 
             if op == DIV:
-                result = int(result / self.current_token.value)
+                result = int(result / self.term())
             elif op == MULT:
-                result = result * int(self.current_token.value)
-            self.eat(INT)
+                result = result * int(self.term())
 
         return result
 
@@ -105,7 +116,8 @@ def main():
             break
         if not text:
             continue
-        interpreter = InterpreterEP(text.strip())
+        lexer = LexerEP(text.strip())
+        interpreter = InterpreterEP(lexer)
         result = interpreter.expr()
         print(result)
 
