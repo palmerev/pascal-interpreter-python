@@ -40,7 +40,10 @@ class GrammarLexer:
         while self.current_char is not None and self.current_char.isdigit():
             result_string += self.current_char
             self.advance()
-        return int(result_string)
+        if len(result_string) > 0:
+            return int(result_string)
+        else:
+            raise Exception('Couldn\'t get integer value from input')
 
     def get_next_token(self):
         self.skip_whitespace()
@@ -49,7 +52,6 @@ class GrammarLexer:
             return Token(EOF, None)
         if self.current_char.isdigit():
             token = Token(INTEGER, self.integer())
-            self.advance()
             return token
         elif self.current_char == '+':
             token = Token(PLUS, '+')
@@ -70,6 +72,13 @@ class GrammarLexer:
         else:
             self.error()
 
+    def __str__(self):
+        return '<GrammarLexer text:{}, pos:{}, current_char:{}>'.format(
+            self.text, self.pos, self.current_char)
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class GrammarInterpreter:
     def __init__(self, lexer):
@@ -81,32 +90,41 @@ class GrammarInterpreter:
 
     def eat(self, expected_type):
         if self.current_token.type_ == expected_type:
+            # print("ate an {} {}".format(
+            #     expected_type, self.current_token.value))
             self.current_token = self.lexer.get_next_token()
         else:
             self.error()
 
     def factor(self):
         """Consume an integer token and returns its value"""
+        token = self.current_token
         self.eat(INTEGER)
+        return int(token.value)
 
     def expr(self):
-        self.factor()
+        result = self.factor()
         while self.current_token.type_ in (PLUS, MINUS, MULT, DIV):
             token = self.current_token
             if token.type_ == PLUS:
                 self.eat(PLUS)
+                result = result + self.factor()
             elif token.type_ == MINUS:
                 self.eat(MINUS)
+                result = result - self.factor()
             elif token.type_ == MULT:
                 self.eat(MULT)
+                result = result * self.factor()
             elif token.type_ == DIV:
                 self.eat(DIV)
-            self.factor()
+                result = int(result / self.factor())  # floor division
 
         if self.current_token.type_ == EOF:
-            return 'Valid'
-        else:
-            raise Exception('Invalid syntax: unknown token type')
+            return result
+        elif self.current_token.type_ not in (
+                PLUS, MINUS, MULT, DIV, INTEGER, EOF):
+            raise Exception('Invalid syntax: unknown token type "%s"' %
+                self.current_token.type_)
 
 
 def main():
