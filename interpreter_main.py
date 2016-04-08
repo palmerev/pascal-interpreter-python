@@ -98,6 +98,9 @@ class Lexer:
             else:
                 self.error()
 
+        if self.current_char is None:
+            return Token(EOF, None)
+
 
 class Interpreter:
     def __init__(self, lexer):
