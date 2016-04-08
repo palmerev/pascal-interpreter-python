@@ -120,19 +120,37 @@ class Interpreter:
         else:
             self.error()
 
-    def term(self):
-        """Return an INTEGER token value"""
+    def factor(self):
+        """
+        Return an INTEGER token value
+        factor : INTEGER
+        """
         token = self.current_token
         self.eat(INTEGER)
-        return token.value
+        return int(token.value)
+
+    def term(self):
+        """term : factor ((MUL | DIV) factor)*"""
+        result = self.factor()
+
+        while self.current_token.type_ in (MULT, DIV):
+            token = self.current_token
+            if token.type_ == MULT:
+                self.eat(MULT)
+                result = result * self.factor()
+            elif token.type_ == DIV:
+                self.eat(DIV)
+                result = int(result / self.factor())  # floor division
+
+        return result
 
     def expr(self):
         """
         Arithmetic expression parser / interpreter
-        expr -> INTEGER PLUS INTEGER
-        expr -> INTEGER MINUS INTEGER
-        expr -> INTEGER MULT INTEGER
-        expr -> INTEGER DIV INTEGER
+
+        expr   : term ((PLUS|MINUS) term)*
+        term   : factor ((MULT|DIV) factor)*
+        factor : INTEGER
         """
         result = self.term()
         while self.current_token is not None and self.current_token.type_ in (PLUS, MINUS, MULT, DIV):
@@ -141,12 +159,6 @@ class Interpreter:
             if token.type_ == PLUS:
                 self.eat(PLUS)
                 result = result + self.term()
-            elif token.type_ == MULT:
-                self.eat(MULT)
-                result = result * self.term()
-            elif token.type_ == DIV:
-                self.eat(DIV)
-                result = int(result / self.term())
             elif token.type_ == MINUS:
                 self.eat(MINUS)
                 result = result - self.term()
