@@ -7,6 +7,7 @@ INTEGER, PLUS, MINUS, MULT, DIV, LPAREN, RPAREN, EOF = (
     'INTEGER', 'PLUS', 'MINUS', 'MULT', 'DIV', '(', ')', 'EOF'
 )
 
+
 class Token:
     def __init__(self, type_, value):
         # token type: INTEGER, PLUS, MINUS, MULT, DIV or EOF
@@ -32,6 +33,24 @@ class Token:
             return Token(self.type_, int(str(self.value) + str(other.value)))
         else:
             raise Exception('error adding tokens: incorrect token type')
+
+
+class AST:
+    """Base class representing a node in an Abstract Syntax Tree"""
+    pass
+
+
+class BinaryOperator(AST):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.token = self.op = op
+        self.right = right
+
+
+class Num(AST):
+    def __init__(self, token):
+        self.token = token
+        self.value = token.value
 
 
 class Lexer:
@@ -109,7 +128,7 @@ class Lexer:
         return Token(EOF, None)
 
 
-class Interpreter:
+class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
         self.current_token = self.lexer.get_next_token()
@@ -129,33 +148,31 @@ class Interpreter:
 
     def factor(self):
         """
-        Return an INTEGER token value
         factor : INTEGER | LPAREN expr RPAREN
         """
         token = self.current_token
         if token.type_ == INTEGER:
             self.eat(INTEGER)
-            return int(token.value)
+            return Num(token)
         elif token.type_ == LPAREN:
             self.eat(LPAREN)
-            result = self.expr()
+            node = self.expr()
             self.eat(RPAREN)
-            return result
+            return node
 
     def term(self):
         """term : factor ((MUL | DIV) factor)*"""
-        result = self.factor()
+        node = self.factor()
 
         while self.current_token.type_ in (MULT, DIV):
             token = self.current_token
             if token.type_ == MULT:
                 self.eat(MULT)
-                result = result * self.factor()
             elif token.type_ == DIV:
                 self.eat(DIV)
-                result = int(result / self.factor())  # floor division
 
-        return result
+            node = BinaryOperator(left=node, op=token, right=self.factor())
+        return node
 
     def expr(self):
         """
@@ -165,18 +182,22 @@ class Interpreter:
         term   : factor ((MULT|DIV) factor)*
         factor : INTEGER
         """
-        result = self.term()
-        while self.current_token is not None and self.current_token.type_ in (PLUS, MINUS, MULT, DIV):
+        node = self.term()
+        while self.current_token is not None and (
+                self.current_token.type_ in (PLUS, MINUS)):
 
             token = self.current_token
             if token.type_ == PLUS:
                 self.eat(PLUS)
-                result = result + self.term()
             elif token.type_ == MINUS:
                 self.eat(MINUS)
-                result = result - self.term()
 
-        return result
+        node = BinaryOperator(left=node, op=token, right=self.term())
+
+        return node
+
+    def parse(self):
+        return self.expr()
 
 
 def main():
