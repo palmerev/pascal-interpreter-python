@@ -3,9 +3,9 @@
 # Token types
 #
 # EOF (end of file) indicates there is no more input left for lexical analysis
-INTEGER, PLUS, MINUS, MULT, DIV, EOF = \
-    'INTEGER', 'PLUS', 'MINUS', 'MULT', 'DIV', 'EOF'
-
+INTEGER, PLUS, MINUS, MULT, DIV, LPAREN, RPAREN, EOF = (
+    'INTEGER', 'PLUS', 'MINUS', 'MULT', 'DIV', '(', ')', 'EOF'
+)
 
 class Token:
     def __init__(self, type_, value):
@@ -95,11 +95,18 @@ class Lexer:
                 self.advance()
                 return Token(DIV, '/')
 
+            elif self.current_char == '(':
+                self.advance()
+                return Token(LPAREN, '(')
+
+            elif self.current_char == ')':
+                self.advance()
+                return Token(RPAREN, ')')
+
             else:
                 self.error()
 
-        if self.current_char is None:
-            return Token(EOF, None)
+        return Token(EOF, None)
 
 
 class Interpreter:
@@ -123,11 +130,17 @@ class Interpreter:
     def factor(self):
         """
         Return an INTEGER token value
-        factor : INTEGER
+        factor : INTEGER | LPAREN expr RPAREN
         """
         token = self.current_token
-        self.eat(INTEGER)
-        return int(token.value)
+        if token.type_ == INTEGER:
+            self.eat(INTEGER)
+            return int(token.value)
+        elif token.type_ == LPAREN:
+            self.eat(LPAREN)
+            result = self.expr()
+            self.eat(RPAREN)
+            return result
 
     def term(self):
         """term : factor ((MUL | DIV) factor)*"""
